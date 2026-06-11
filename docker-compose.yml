@@ -1,0 +1,13 @@
+services:
+  scrapling:
+    image: ghcr.io/d4vinci/scrapling:latest
+    container_name: scrapling
+    volumes:
+      - ./scripts:/app/scripts
+      - ./output:/app/output
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
