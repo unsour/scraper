@@ -5,6 +5,7 @@ services:
     volumes:
       - ./scripts:/app/scripts
       - ./output:/app/output
+      - ./requirements.txt:/app/requirements.txt:ro
     working_dir: /app
     stdin_open: true
     tty: true
