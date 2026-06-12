@@ -1,6 +1,6 @@
 services:
   scrapling:
-    image: ghcr.io/d4vinci/scrapling:latest
+    build: .
     container_name: scrapling
     volumes:
       - ./scripts:/app/scripts
@@ -11,3 +11,4 @@ services:
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/scripts
