@@ -4,4 +4,10 @@ RUN pip install --no-cache-dir \
     pandas==2.2.3 \
     pyarrow==16.1.0 \
     python-jobspy==1.1.80 \
-    requests==2.32.3
+    requests==2.32.3 \
+    duckdb==1.2.2 \
+    rapidfuzz==3.9.7 \
+    tenacity==8.3.0 \
+    loguru==0.7.2 \
+    openai==1.35.0 \
+    python-dotenv==1.0.1

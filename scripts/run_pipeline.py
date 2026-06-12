@@ -1,38 +1,41 @@
-from pipeline.companies import load_companies
-from pipeline.exporter import export
-from pipeline.jobs import scrape_all_jobs
-from pipeline.merger import merge_companies_with_jobs, select_output_columns
-from pipeline.scoring import add_hiring_velocity, add_quality_score
-from pipeline.tech_stack import add_tech_stack
-from pipeline.constants import OUTPUT_COLUMNS
+import subprocess
+import sys
+from pathlib import Path
+
+from loguru import logger
+
+STEPS: list[str] = [
+    "scripts/01_download_ch.py",
+    "scripts/02_scrape_jobs.py",
+    "scripts/03_merge.py",
+    "scripts/04_enrich.py",
+    "scripts/05_export.py",
+]
 
 
-def run() -> None:
-    print("\n=== [1/6] Loading Companies House data ===")
-    companies = load_companies()
+def _run_step(script: str) -> None:
+    script_path = Path(script)
+    logger.info(f"▶ {script_path.name}")
 
-    print("\n=== [2/6] Scraping job listings (LinkedIn + Indeed) ===")
-    jobs = scrape_all_jobs()
+    result = subprocess.run(
+        [sys.executable, script],
+        capture_output=False,
+    )
 
-    print("\n=== [3/6] Extracting tech stack from descriptions ===")
-    jobs = add_tech_stack(jobs)
+    if result.returncode != 0:
+        raise RuntimeError(f"Step failed with exit code {result.returncode}: {script}")
 
-    print("\n=== [4/6] Merging companies + jobs ===")
-    merged = merge_companies_with_jobs(companies, jobs)
-    print(f"  Matched {merged['company_number'].notna().sum():,} / {len(merged):,} jobs to CH records")
+    logger.success(f"✓ {script_path.name}")
 
-    print("\n=== [5/6] Calculating hiring_velocity + quality_score ===")
-    merged = add_hiring_velocity(merged)
-    merged = add_quality_score(merged)
 
-    print("\n=== [6/6] Exporting results ===")
-    final = select_output_columns(merged, OUTPUT_COLUMNS)
-    csv_path, parquet_path = export(final)
+def main() -> None:
+    logger.info("=== Pipeline start ===")
 
-    print(f"\n✓ Done — {len(final):,} leads")
-    print(f"  CSV:     {csv_path}")
-    print(f"  Parquet: {parquet_path}")
+    for step in STEPS:
+        _run_step(step)
+
+    logger.success("=== Pipeline complete ===")
 
 
 if __name__ == "__main__":
-    run()
+    main()

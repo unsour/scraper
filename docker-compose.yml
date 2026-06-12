@@ -9,6 +9,9 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/app/scripts
