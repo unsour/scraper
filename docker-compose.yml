@@ -2,6 +2,8 @@ services:
   scrapling:
     build: .
     container_name: scrapling
+    entrypoint: ""
+    command: sleep infinity
     volumes:
       - ./scripts:/app/scripts
       - ./output:/app/output
